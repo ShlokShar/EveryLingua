@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <link href="../static/css/output.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+    <style>
+
+        body {
+            background-image: url('../static/img/login.jpeg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
+        input[type="submit"] {
+            background-image: linear-gradient(to right, red 50%, #007C6A 50%);
+            background-size: 200% 100%;
+            transition: background-position 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-position: -100% 0;
+        }
+    </style>
+</head>
+<body>
+<div class="flex flex-row">
+    <div class="flex flex-col space-y-10 bg-white h-screen p-4 justify-center font-poppins">
+        <img src="../static/img/logo.png" width="250px" class="">
+        <div class="flex flex-col space-y-1">
+            <p class="text-xl font-bold font-sans">Sign up!<br><span
+                    class="text-sm text-blue-700 font-poppins font-normal"><a href="/login">Already have an account?</a></span>
+            </p>
+            <p class="text-md font-sans text-red-500 w-[300px] font-normal">{{ error }}</p>
+        </div>
+        <form action="/signup" method="post" class="space-y-4">
+            <input class="bg-gray-200 rounded-3xl px-4 py-1 w-full" name="email" type="email" placeholder="Email">
+            <br>
+            <input class="bg-gray-200 rounded-3xl px-4 py-1 w-full" name="password" type="password"
+                   placeholder="Password">
+            <br>
+            <br>
+            <input class="bg-black text-white rounded-xl w-full px-2 py-2" type="submit">
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

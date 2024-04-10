@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EveryLingua</title>
+    <link href="../../static/css/output.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+    <style>
+        .language-options {
+            max-height: calc(100vh - 210px);
+            overflow-y: scroll;
+        }
+
+        .curriculum-options {
+            max-height: calc(100vh);
+            overflow-y: scroll;
+        }
+
+        .chat-options {
+            max-height: calc(100vh - 120px);
+            overflow-y: scroll;
+        }
+
+        {#@media screen and (min-width: 1080px) {#}
+        {#    body {#}
+        {#        overflow: hidden;#}
+        {#    }#}
+        {#}#}
+    </style>
+</head>
+<body class="">
+<nav class="flex flex-col  min-[1080px]:flex-row px-5 pb-3 justify-stretch">
+
+    <div class="flex flex-col space-y-5 flex-initial">
+        <div>
+            <img src="../static/img/logo.png" width="250px" class="pr-8 pt-8" alt="">
+        </div>
+
+        <div class="w-full bg-gray-100 h-0.5"></div>
+
+        <div id="languages" class="min-[1080px]:pb-8 flex max-min-[1080px]:justify-center max-[1080px]:items-center flex-wrap min-[1080px]:flex-col text-xl pr-5 language-options min-[1080px]:space-y-2 no-scrollbar grow max-[1080px]:space-x-2">
+
+            {% for language, details in languages.items() %}
+                {% if language == selected %}
+                    <div class="bg-accent rounded-2xl px-3 py-3 text-white border">
+                        <p>{{ details["flag"] }} {{ language.capitalize() }}</p>
+                    </div>
+                {% else %}
+                    <div class="bg-white rounded-2xl px-3 py-3 text-black border" onclick="window.location.replace('/learn/{{ language }}')">
+                        <p>{{ details["flag"] }} {{ language.capitalize() }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="hidden min-[1080px]:flex flex-col sticky h-min bottom-0 bg-white py-2 space-y-1">
+            <a href="/add-language">➕ Add Course</a>
+            <a href="/remove-language">➖ Remove Course</a>
+            <a href="/progress/spanish">📊 Progress</a>
+        </div>
+    </div>
+
+    <div class="w-0.5 bg-gray-100"></div>
+
+    <div class="flex flex-col space-y-5 items-center overflow-hidden">
+        <div>
+            <p class="text-[#2CB57E] text-3xl font-poppins px-8 pt-[37px]">CURRICULUM</p>
+        </div>
+
+        <div class="w-full bg-gray-100 h-0.5"></div>
+
+        <div class="pb-2 flex flex-wrap min-[1080px]:flex-col justify-center space-y-2 text-3xl text-white curriculum-options no-scrollbar">
+            <div class="relative">
+                <img src="../static/img/chatbot.png" class="w-full h-auto px-4">
+                <div onclick="showSection('chatbotSection')" id="chatbotButton" class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+                    <p class="text-[#2CB57E] text-2xl font-bold">CHATBOT</p>
+                    <p class="text-white text-lg font-bold">robot de chat</p>
+                </div>
+            </div>
+
+            <div class="relative">
+                <img src="../static/img/letters.png" class="w-full h-auto px-4">
+                <div onclick="showSection('grammarSection')" id="grammarButton1" class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+                    <p class="text-[#2CB57E] text-2xl font-bold">GRAMMAR</p>
+                    <p class="text-white text-lg font-bold">gramática</p>
+                </div>
+            </div>
+
+            <div class="relative">
+                <img src="../static/img/vocabulary.png" class="w-full h-auto px-4">
+                <div onclick="showSection('vocabularySection')" class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+                    <p class="text-[#2CB57E] text-2xl font-bold">VOCABULARY</p>
+                    <p class="text-white text-lg font-bold">vocabulario</p>
+                </div>
+            </div>
+
+            <div class="relative">
+                <img src="../static/img/culture.png" class="w-full h-auto px-4">
+                <div onclick="showSection('cultureSection')" id="cultureButton1" class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+                    <p class="text-[#2CB57E] text-2xl font-bold">CULTURE</p>
+                    <p class="text-white text-lg font-bold">cultura</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-0.5 bg-gray-100 min-[1080px]:h-screen"></div>
+
+    <div id="chatbotSection" class="flex flex-col space-y-5 grow" style="display: flex;">
+        <div class="flex justify-between">
+            <p class="text-black text-3xl font-poppins px-8 pt-[37px]">LUIGI</p>
+            <p class="text-black text-3xl font-poppins px-8 pt-[37px]">🗑️</p>
+        </div>
+
+        <div class="w-full bg-gray-100 h-0.5"></div>
+
+        <div id="chats" class="flex flex-col space-y-2 text-3xl chat-options no-scrollbar flex-1 pb-10">
+
+        </div>
+
+        <div class="flex flex-row sticky h-min bottom-0 bg-blend-saturation pb-2 justify-between space-y-1 space-x-3 items-baseline pl-3">
+            <input id="chat_input" class="flex-grow rounded-3xl w-full bg-gray-200 py-1 px-3 text-sm" placeholder="Escribe aqui..." type="text">
+            <p onclick="sendText()" id="send_text" class="text-white bg-accent px-2 text-lg rounded-full ">➤</p>
+        </div>
+    </div>
+
+    <div id="grammarSection" class="flex flex-col space-y-5 grow" style="display: none;">
+        <div class="flex justify-between">
+            <p class="text-black text-3xl font-poppins px-8 pt-[37px]">GRAMMAR</p>
+        </div>
+
+        <div class="w-full bg-gray-100 h-0.5"></div>
+
+        <div id="grammarProgress" class="flex w-full justify-between items-center min-[1080px]:pl-5 space-x-3">
+
+        </div>
+
+        <form id="grammar" class="flex flex-col space-y-3 items-center justify-center chat-options no-scrollbar flex-1 pb-10 h-full">
+            <div class="space-y-1 flex flex-col items-start justify-start" id="grammarMain">
+                <p class="font-poppins text-lg">Concepts:</p>
+                <div class="flex items-center">
+                    <input id="past tense" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="past tense" class="ml-2 text-sm font-medium dark:text-black">Past Tense</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="present tense" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="present tense" class="ml-2 text-sm font-medium dark:text-black">Present Tense</label>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="future tense" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="future tense" class="ml-2 text-sm font-medium dark:text-black">Future Tense</label>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="direct object pronoun" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="direct object pronoun" class="ml-2 text-sm font-medium dark:text-black">Direct Object Pronoun</label>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="indirect object pronoun" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="indirect object pronoun" class="ml-2 text-sm font-medium dark:text-black">Indirect Object Pronoun</label>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="direct + indirect object pronouns" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="direct + indirect object pronouns" class="ml-2 text-sm font-medium dark:text-black">Direct + Indirect Object Pronouns</label>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="conditional tense" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="conditional tense" class="ml-2 text-sm font-medium dark:text-black">Conditional Tense</label>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="subjunctive" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="subjunctive" class="ml-2 text-sm font-medium dark:text-black">Subjunctive</label>
+                </div>
+
+                <p class="font-poppins text-lg">Difficulty: <span id="difficultyLabel">4.7</span></p>
+                <input id="difficulty" type="range" class="w-full">
+                <input onclick="startGrammar()" type="button" class="px-2 py-1 bg-accent rounded-3xl" value="Submit">
+            </div>
+        </form>
+
+        <div class="flex flex-row sticky h-min bottom-0 bg-blend-saturation pb-2 justify-between space-y-1 space-x-3 items-baseline pl-3" id="grammarButton">
+
+        </div>
+    </div>
+    <div id="vocabularySection" class="flex flex-col space-y-5 grow" style="display: none;">
+        <div class="flex justify-between">
+            <p class="text-black text-3xl font-poppins px-8 pt-[37px]">VOCABULARY</p>
+        </div>
+
+        <div class="w-full bg-gray-100 h-0.5"></div>
+
+        <div id="vocabularyProgress" class="flex w-full justify-between items-center min-[1080px]:pl-5 space-x-3">
+
+        </div>
+
+        <form id="vocabulary" class="flex flex-col space-y-3 items-center justify-center chat-options no-scrollbar flex-1 pb-10 h-full">
+            <div class="space-y-1 flex flex-col items-start justify-start" id="vocabularyMain">
+                <p class="font-poppins text-lg">Themes:</p>
+                <div class="flex items-center">
+                    <input id="work" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="work" class="ml-2 text-sm font-medium dark:text-black">Work</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="restaurant" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="restaurant" class="ml-2 text-sm font-medium dark:text-black">Restaurant</label>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="sports" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="sports" class="ml-2 text-sm font-medium dark:text-black">Sports</label>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="Classroom" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="Classroom" class="ml-2 text-sm font-medium dark:text-black">Classroom</label>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="Festivals" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="Festivals" class="ml-2 text-sm font-medium dark:text-black">Festivals</label>
+                </div>
+
+                <p class="font-poppins text-lg">Difficulty: <span id="difficultyLabel">4.7</span></p>
+                <input id="difficulty" type="range" class="w-full">
+                <input onclick="startVocabulary()" type="button" class="px-2 py-1 bg-accent rounded-3xl" value="Submit">
+            </div>
+        </form>
+
+        <div class="flex flex-row sticky h-min bottom-0 bg-blend-saturation pb-2 justify-between space-y-1 space-x-3 items-baseline pl-3" id="vocabularyButton">
+
+        </div>
+    </div>
+    <div id="cultureSection" class="flex flex-col space-y-5 grow" style="display: none;">
+        <div class="flex justify-between">
+            <p class="text-black text-3xl font-poppins px-8 pt-[37px]">CULTURE</p>
+        </div>
+
+        <div class="w-full bg-gray-100 h-0.5"></div>
+
+        <div id="cultureProgress" class="flex w-full justify-between items-center min-[1080px]:pl-5 space-x-3">
+
+        </div>
+
+        <form id="culture" class="flex flex-col space-y-3 items-center justify-center chat-options no-scrollbar flex-1 pb-10 h-full">
+            <div class="space-y-1 flex flex-col items-start justify-start" id="cultureMain">
+                <p class="font-poppins text-lg">Themes:</p>
+                <div class="flex items-center">
+                    <input id="work" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="work" class="ml-2 text-sm font-medium dark:text-black">Day of the Dead</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="restaurant" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="restaurant" class="ml-2 text-sm font-medium dark:text-black">Cinco de Mayo</label>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="sports" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="sports" class="ml-2 text-sm font-medium dark:text-black">Carnaval</label>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="Classroom" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="Classroom" class="ml-2 text-sm font-medium dark:text-black">Las Posadas</label>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="Festivals" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="Festivals" class="ml-2 text-sm font-medium dark:text-black">Fiesta de San Fermin</label>
+                </div>
+
+                <p class="font-poppins text-lg">Difficulty: <span id="difficultyLabel">4.7</span></p>
+                <input id="difficulty" type="range" class="w-full">
+                <input onclick="startCulture()" type="button" class="px-2 py-1 bg-accent rounded-3xl" value="Submit">
+            </div>
+        </form>
+
+        <div class="flex flex-row sticky h-min bottom-0 bg-blend-saturation pb-2 justify-between space-y-1 space-x-3 items-baseline pl-3" id="cultureButton">
+
+        </div>
+    </div>
+</nav>
+<script>
+
+    const slider=document.getElementById("difficulty");
+    slider.addEventListener("input", updateDifficulty);
+
+    let grammarChoiceSelected = "";
+    let grammarAnswer = "a";
+    let currentGrammar = 0;
+
+    let selectedGrammarConcepts = [];
+    let grammarQuestions = [];
+    let grammarCorrect = 0;
+    let seenScore = false;
+
+    let vocabularyChoiceSelected = "";
+    let vocabularyAnswer = "a";
+    let currentVocabulary = 0;
+
+    let selectedVocabularyConcepts = [];
+    let vocabularyQuestions = [];
+    let vocabularyCorrect = 0;
+
+    let cultureChoiceSelected = "";
+    let cultureAnswer = "a";
+    let currentCulture = 0;
+
+    let selectedCultureConcepts = [];
+    let cultureQuestions = [];
+    let cultureCorrect = 0;
+
+    let chatInput = document.getElementById("chat_input");
+    chatInput.addEventListener("keydown", function (e) {
+        if (e.code === "Enter") {
+            sendText();
+        }
+    })
+
+    function showSection(toEnable) {
+        sections = ["chatbotSection", "grammarSection", "vocabularySection", "cultureSection"];
+        for (let i=0; i < sections.length; i++) {
+            section = sections[i]
+            document.getElementById(section).style = "display: none;";
+        }
+        document.getElementById(toEnable).style = "display: flex;";
+    }
+
+
+
+    function startGrammar() {
+        let hasConcept = false;
+        let grammarConcepts = document.getElementById("grammarMain");
+        for (let i = 0; i < grammarConcepts.children.length; i++) {
+            if (grammarConcepts.children[i].children[0] && grammarConcepts.children[i].children[0].type == "checkbox") {
+                if (grammarConcepts.children[i].children[0].checked) {
+                    hasConcept = true;
+                    selectedGrammarConcepts.push(grammarConcepts.children[i].children[0].id.split(" ").join("."));
+                }
+            }
+        }
+
+        if (!hasConcept) {
+            alert("Please choose a grammatical concept.");
+            return;
+        } else {
+
+            document.getElementById("grammarMain").innerHTML = `LOADING...`;
+
+            console.log("learn/get-grammar/" + slider.value + "/" + selectedGrammarConcepts.join("-"));
+            fetch("/get-grammar/" + slider.value / 10 + "/" + selectedGrammarConcepts.join("-") + "/Spanish")
+                .then(response => response.json())
+                .then(data => {
+                    grammarQuestions = data;
+                    let question = data[0][0].substring(3);
+                    grammarAnswer = data[0][0][0];
+
+                    document.getElementById("grammarProgress").innerHTML = `
+                    <p class="text-white bg-red-500 px-2 text-lg rounded-full hover:bg-red-400">X</p>
+                    <p></p>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 " style="margin: 0;">
+                        <div class="bg-accent h-2.5 rounded-full" style="width: 10%" id="grammarProgressBar"></div>
+                    </div>
+                    `
+                    document.getElementById("grammarMain").innerHTML = `
+                    <form id="grammar" class="flex flex-col space-y-3 items-center justify-center chat-options no-scrollbar flex-1 pb-10 h-full ">
+                        <div class="space-y-1 flex flex-col items-center justify-start text-xl font-poppins" id="">
+                            <p class="" id="grammarQuestion">${question}</p>
+                            <br>
+                            <div class="flex flex-col space-y-2" id="grammarOptions">
+                                <p onclick="selectGrammar('a')" id="a" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${data[0][1]}</p>
+                                <p onclick="selectGrammar('b')" id="b" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${data[0][2]}</p>
+                                <p onclick="selectGrammar('c')" id="c" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${data[0][3]}</p>
+                                <p onclick="selectGrammar('d')" id="d" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${data[0][4]}</p>
+                            </div>
+                            <br>
+
+                        </div>
+                    </form>
+                    `
+
+                    document.getElementById("grammarButton").innerHTML = `
+                    <div></div>
+                    <p onclick="checkGrammar()" id="sendGrammarText" unselectable="on" class="text-white bg-accent px-3 py-1 text-lg rounded-full hover:bg-green-400 cursor-pointer user-select:none;">Check</p>
+                    `
+                })
+
+
+        }
+    }
+
+    function startVocabulary() {
+        let hasConcept = false;
+        let vocabularyConcepts = document.getElementById("vocabularyMain");
+        for (let i = 0; i < vocabularyConcepts.children.length; i++) {
+            if (vocabularyConcepts.children[i].children[0] && vocabularyConcepts.children[i].children[0].type == "checkbox") {
+                if (vocabularyConcepts.children[i].children[0].checked) {
+                    hasConcept = true;
+                    selectedVocabularyConcepts.push(vocabularyConcepts.children[i].children[0].id.split(" ").join("."));
+                }
+            }
+        }
+
+        if (!hasConcept) {
+            alert("Please choose a vocabulary theme.");
+            return;
+        } else {
+
+            document.getElementById("vocabularyMain").innerHTML = `LOADING...`;
+
+            console.log("learn/get-grammar/" + slider.value + "/" + selectedVocabularyConcepts.join("-"));
+            fetch("/get-vocabulary/" + slider.value / 10 + "/" + selectedVocabularyConcepts.join("-") + "/Spanish")
+                .then(response => response.json())
+                .then(data => {
+                    vocabularyQuestions = data;
+                    let question = data[0][0].substring(3);
+                    vocabularyAnswer = data[0][0][0];
+
+                    document.getElementById("vocabularyProgress").innerHTML = `
+                    <p class="text-white bg-red-500 px-2 text-lg rounded-full hover:bg-red-400">X</p>
+                    <p></p>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 " style="margin: 0;">
+                        <div class="bg-accent h-2.5 rounded-full" style="width: 10%" id="vocabularyProgressBar"></div>
+                    </div>
+                    `
+                    document.getElementById("vocabularyMain").innerHTML = `
+                    <form id="vocabulary" class="flex flex-col space-y-3 items-center justify-center chat-options no-scrollbar flex-1 pb-10 h-full ">
+                        <div class="space-y-1 flex flex-col items-center justify-start text-xl font-poppins" id="">
+                            <p class="" id="vocabularyQuestion">${question}</p>
+                            <br>
+                            <div class="flex flex-col space-y-2" id="vocabularyOptions">
+                                <p onclick="selectVocabulary('a')" id="a" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${data[0][1]}</p>
+                                <p onclick="selectVocabulary('b')" id="b" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${data[0][2]}</p>
+                                <p onclick="selectVocabulary('c')" id="c" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${data[0][3]}</p>
+                                <p onclick="selectVocabulary('d')" id="d" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${data[0][4]}</p>
+                            </div>
+                            <br>
+
+                        </div>
+                    </form>
+                    `
+
+                    document.getElementById("vocabularyButton").innerHTML = `
+                    <div></div>
+                    <p onclick="checkVocabulary()" id="sendVocabularyText" unselectable="on" class="text-white bg-accent px-3 py-1 text-lg rounded-full hover:bg-green-400 cursor-pointer user-select:none;">Check</p>
+                    `
+                })
+
+
+        }
+    }
+
+    function startCulture() {
+        let hasConcept = false;
+        let cultureConcepts = document.getElementById("cultureMain");
+        for (let i = 0; i < cultureConcepts.children.length; i++) {
+            if (cultureConcepts.children[i].children[0] && cultureConcepts.children[i].children[0].type == "checkbox") {
+                if (cultureConcepts.children[i].children[0].checked) {
+                    hasConcept = true;
+                    selectedCultureConcepts.push(cultureConcepts.children[i].children[0].id.split(" ").join("."));
+                }
+            }
+        }
+
+        if (!hasConcept) {
+            alert("Please choose a vocabulary theme.");
+            return;
+        } else {
+
+            document.getElementById("cultureMain").innerHTML = `LOADING...`;
+
+            console.log("learn/get-grammar/" + slider.value + "/" + selectedCultureConcepts.join("-"));
+            fetch("/get-culture/" + slider.value / 10 + "/" + selectedCultureConcepts.join("-") + "/Spanish")
+                .then(response => response.json())
+                .then(data => {
+                    cultureQuestions = data;
+                    let question = data[0][0].substring(3);
+                    cultureAnswer = data[0][0][0];
+
+                    document.getElementById("cultureProgress").innerHTML = `
+                    <p class="text-white bg-red-500 px-2 text-lg rounded-full hover:bg-red-400">X</p>
+                    <p></p>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 " style="margin: 0;">
+                        <div class="bg-accent h-2.5 rounded-full" style="width: 10%" id="cultureProgressBar"></div>
+                    </div>
+                    `
+                    document.getElementById("cultureMain").innerHTML = `
+                    <form id="culture" class="flex flex-col space-y-3 items-center justify-center chat-options no-scrollbar flex-1 pb-10 h-full ">
+                        <div class="space-y-1 flex flex-col items-center justify-start text-xl font-poppins" id="">
+                            <p class="" id="cultureQuestion">${question}</p>
+                            <br>
+                            <div class="flex flex-col space-y-2" id="cultureOptions">
+                                <p onclick="selectCulture('a')" id="a" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${data[0][1]}</p>
+                                <p onclick="selectCulture('b')" id="b" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${data[0][2]}</p>
+                                <p onclick="selectCulture('c')" id="c" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${data[0][3]}</p>
+                                <p onclick="selectCulture('d')" id="d" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${data[0][4]}</p>
+                            </div>
+                            <br>
+
+                        </div>
+                    </form>
+                    `
+
+                    document.getElementById("cultureButton").innerHTML = `
+                    <div></div>
+                    <p onclick="checkCulture()" id="sendCultureText" unselectable="on" class="text-white bg-accent px-3 py-1 text-lg rounded-full hover:bg-green-400 cursor-pointer user-select:none;">Check</p>
+                    `
+                })
+
+
+        }
+    }
+
+    function sendText() {
+        text = document.getElementById("chat_input").value;
+        if (!text) {return}
+        document.getElementById("chats").innerHTML += `<div class="flex flex-row-reverse w-2/3 py-1 self-end items-start">
+                <p>👤</p>
+                <div class="bg-blue-400 rounded-l-2xl rounded-br-2xl">
+                    <p class="p-2 text-black font-poppins text-sm">${text}</p>
+                </div>
+            </div>`
+
+        document.getElementById("chats").innerHTML += `<div id="responseStatus" class="flex flex-row space-x-2 w-2/3 px-2">
+                <p>🌏</p>
+                <div class="bg-gray-300 rounded-r-2xl rounded-bl-2xl">
+                    <p class="p-2 text-black font-poppins text-sm">. . .</p>
+                </div>`
+
+        document.getElementById("chat_input").value = ""
+
+        fetch(`send-text/${text}/Spanish`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("responseStatus").remove()
+                document.getElementById("chats").innerHTML += `<div class="flex flex-row space-x-2 w-2/3 px-2">
+                <p>🌏</p>
+                <div class="bg-gray-300 rounded-r-2xl rounded-bl-2xl">
+                    <p class="p-2 text-black font-poppins text-sm">${data}</p>
+                </div>
+            </div>`
+            })
+
+    }
+
+    function selectGrammar(selected) {
+        grammarChoiceSelected = selected
+        for (let i = 0; i < document.getElementById("grammarOptions").children.length; i++) {
+            if (document.getElementById("grammarOptions").children[i].id == selected) {
+                document.getElementById("grammarOptions").children[i].style = "background-color: #ddf4ff"
+            } else {
+                document.getElementById("grammarOptions").children[i].style = "background-color: #trans"
+            }
+        }
+    }
+
+    function selectVocabulary(selected) {
+        console.log('hi 2')
+        vocabularyChoiceSelected = selected
+        for (let i = 0; i < document.getElementById("vocabularyOptions").children.length; i++) {
+            if (document.getElementById("vocabularyOptions").children[i].id == selected) {
+                document.getElementById("vocabularyOptions").children[i].style = "background-color: #ddf4ff"
+            } else {
+                document.getElementById("vocabularyOptions").children[i].style = "background-color: #trans"
+            }
+        }
+    }
+
+    function selectCulture(selected) {
+        console.log('hi 2')
+        cultureChoiceSelected = selected
+        for (let i = 0; i < document.getElementById("cultureOptions").children.length; i++) {
+            if (document.getElementById("cultureOptions").children[i].id == selected) {
+                document.getElementById("cultureOptions").children[i].style = "background-color: #ddf4ff"
+            } else {
+                document.getElementById("cultureOptions").children[i].style = "background-color: #trans"
+            }
+        }
+    }
+
+    function updateDifficulty() {
+        document.getElementById("difficultyLabel").innerHTML = slider.value / 10
+    }
+
+    function checkGrammar() {
+
+        if (!grammarChoiceSelected) {
+            return;
+        }
+
+        document.getElementById("sendGrammarText").innerHTML = "Next"
+        for (let i = 0; i < document.getElementById("grammarOptions").children.length; i++) {
+            document.getElementById("grammarOptions").children[i].onclick = "null"
+        }
+        if (grammarAnswer === grammarChoiceSelected) {
+            document.getElementById(grammarAnswer).style = "background-color: #2CB57E"
+            grammarCorrect++;
+        } else {
+            document.getElementById(grammarAnswer).style = "background-color: #2CB57E"
+            document.getElementById(grammarChoiceSelected).style = "background-color: #ef4444"
+        }
+
+        document.getElementById("sendGrammarText").innerHTML = "Next"
+        document.getElementById("sendGrammarText").onclick = nextGrammar
+
+        currentGrammar++;
+    }
+
+    function checkVocabulary() {
+        console.log("hi")
+        if (!vocabularyChoiceSelected) {
+            return;
+        }
+        console.log("bye")
+        document.getElementById("sendVocabularyText").innerHTML = "Next"
+        for (let i = 0; i < document.getElementById("vocabularyOptions").children.length; i++) {
+            document.getElementById("vocabularyOptions").children[i].onclick = "null"
+        }
+        if (vocabularyAnswer === vocabularyChoiceSelected) {
+            document.getElementById(vocabularyAnswer).style = "background-color: #2CB57E"
+            vocabularyCorrect++;
+        } else {
+            document.getElementById(vocabularyAnswer).style = "background-color: #2CB57E"
+            document.getElementById(vocabularyChoiceSelected).style = "background-color: #ef4444"
+        }
+
+        document.getElementById("sendVocabularyText").innerHTML = "Next"
+        document.getElementById("sendVocabularyText").onclick = nextVocabulary
+
+        currentVocabulary++;
+    }
+
+    function checkCulture() {
+        console.log("hi")
+        if (!cultureChoiceSelected) {
+            return;
+        }
+        console.log("bye")
+        document.getElementById("sendCultureText").innerHTML = "Next"
+        for (let i = 0; i < document.getElementById("cultureOptions").children.length; i++) {
+            document.getElementById("cultureOptions").children[i].onclick = "null"
+        }
+        if (cultureAnswer === cultureChoiceSelected) {
+            document.getElementById(cultureAnswer).style = "background-color: #2CB57E"
+            cultureCorrect++;
+        } else {
+            document.getElementById(cultureAnswer).style = "background-color: #2CB57E"
+            document.getElementById(cultureChoiceSelected).style = "background-color: #ef4444"
+        }
+
+        document.getElementById("sendCultureText").innerHTML = "Next"
+        document.getElementById("sendCultureText").onclick = nextCulture
+
+        currentCulture++;
+    }
+
+    function nextGrammar() {
+        if (currentGrammar === 10) {
+
+            if (seenScore) {
+                location.reload()
+            }
+
+            document.getElementById("grammarQuestion").innerHTML = "You got...";
+            document.getElementById("grammarOptions").innerHTML = `${grammarCorrect.toString()} / 10`
+            document.getElementById("grammarOptions").style = "text: 30px;"
+            seenScore = true;
+            return;
+        }
+        let choices = ["a", "b", "c", "d"]
+        document.getElementById("grammarOptions").innerHTML = ""
+        document.getElementById("grammarQuestion").innerHTML = grammarQuestions[currentGrammar][0].substring(3)
+        grammarAnswer = grammarQuestions[currentGrammar][0][0]
+        for (let choice in choices) {
+            console.log(typeof(choice))
+            document.getElementById("grammarOptions").innerHTML += `<p onclick="selectGrammar('${choices[choice]}')" id="${choices[choice]}" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${grammarQuestions[currentGrammar][parseInt(choice) + 1]}</p>`
+        }
+        document.getElementById("sendGrammarText").onclick = checkGrammar
+        document.getElementById("sendGrammarText").innerHTML = "Check"
+        document.getElementById("grammarProgressBar").style.width = parseFloat(document.getElementById("grammarProgressBar").style.width) + 10 + '%'
+        grammarChoiceSelected = ""
+    }
+    function nextVocabulary() {
+        if (currentVocabulary === 10) {
+
+            if (seenScore) {
+                location.reload()
+            }
+
+            document.getElementById("vocabularyQuestion").innerHTML = "You got...";
+            document.getElementById("vocabularyOptions").innerHTML = `${vocabularyCorrect.toString()} / 10`
+            document.getElementById("vocabularyOptions").style = "text: 30px;"
+            seenScore = true;
+            return;
+        }
+        let choices = ["a", "b", "c", "d"]
+        document.getElementById("vocabularyOptions").innerHTML = ""
+        document.getElementById("vocabularyQuestion").innerHTML = vocabularyQuestions[currentVocabulary][0].substring(3)
+        vocabularyAnswer = vocabularyQuestions[currentVocabulary][0][0]
+        for (let choice in choices) {
+            console.log(typeof(choice))
+            document.getElementById("vocabularyOptions").innerHTML += `<p onclick="selectVocabulary('${choices[choice]}')" id="${choices[choice]}" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${vocabularyQuestions[currentVocabulary][parseInt(choice) + 1]}</p>`
+        }
+        document.getElementById("sendVocabularyText").onclick = checkVocabulary
+        document.getElementById("sendVocabularyText").innerHTML = "Check"
+        document.getElementById("vocabularyProgressBar").style.width = parseFloat(document.getElementById("vocabularyProgressBar").style.width) + 10 + '%'
+        vocabularyChoiceSelected = ""
+    }
+    function nextCulture() {
+        if (currentCulture === 10) {
+            console.log("yay :3")
+            if (seenScore) {
+                location.reload()
+            }
+
+            document.getElementById("cultureQuestion").innerHTML = "You got...";
+            document.getElementById("cultureOptions").innerHTML = `${cultureCorrect.toString()} / 10`
+            document.getElementById("cultureOptions").style = "text: 30px;"
+            seenScore = true;
+            return;
+        }
+        let choices = ["a", "b", "c", "d"]
+        document.getElementById("cultureOptions").innerHTML = ""
+        document.getElementById("cultureQuestion").innerHTML = cultureQuestions[currentCulture][0].substring(3)
+        cultureAnswer = cultureQuestions[currentCulture][0][0]
+        for (let choice in choices) {
+            console.log(typeof(choice))
+            document.getElementById("cultureOptions").innerHTML += `<p onclick="selectCulture('${choices[choice]}')" id="${choices[choice]}" class="rounded-2xl border border-gray hover:bg-gray-100 p-2 w-full cursor-pointer" style="">${cultureQuestions[currentCulture][parseInt(choice) + 1]}</p>`
+        }
+        document.getElementById("sendCultureText").onclick = checkCulture
+        document.getElementById("sendCultureText").innerHTML = "Check"
+        document.getElementById("cultureProgressBar").style.width = parseFloat(document.getElementById("cultureProgressBar").style.width) + 10 + '%'
+        cultureChoiceSelected = ""
+    }
+
+</script>
+</body>
+</html>
