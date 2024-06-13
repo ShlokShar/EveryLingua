@@ -163,8 +163,8 @@ def remove(language):
 
 @app.route("/get-grammar/<difficulty>/<concepts>/<language>")
 def get_grammar(difficulty, concepts, language):
-    practice_problems = grammar(10, difficulty=difficulty, concepts=concepts, language=language)
-    random.shuffle(practice_problems)
+    practice_problems = grammar(10, difficulty, concepts, language)
+    # random.shuffle(practice_problems)
     print(practice_problems)
     return flask.jsonify(practice_problems)
 
@@ -172,8 +172,6 @@ def get_grammar(difficulty, concepts, language):
 @app.route("/get-vocabulary/<difficulty>/<concepts>/<language>")
 def get_vocabulary(difficulty, concepts, language):
     practice_problems = vocabulary(10, difficulty, concepts, language)
-    random.shuffle(practice_problems)
-    print(practice_problems)
     return flask.jsonify(practice_problems)
 
 

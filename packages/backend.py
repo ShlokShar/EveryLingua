@@ -1,6 +1,6 @@
 from packages.imports import *
 
-openai.api_key = "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"
+openai.api_key = "API"
 model = "gpt-3.5-turbo-instruct"
 
 base_languages = {
@@ -32,7 +32,6 @@ def logged_in(f):
             return f(*args, **kwargs)
         else:
             return flask.redirect("/")
-
     return validator
 
 
@@ -76,10 +75,23 @@ def grammar(amount, difficulty, concepts, language):
     ["letter answer) QUESTION", "a) CHOICE", "b) CHOICE", "c) CHOICE", "d) CHOICE"]
     ["letter answer) QUESTION", "a) CHOICE", "b) CHOICE", "c) CHOICE", "d) CHOICE"]
 
+    Here is an example for Spanish: 
+    ["c) Es necesario que tú _____ (estudiar) más para el examen.", "a) estudies", "b) estudiaras", "c) estudies", "d) estudias"]
+    ["a) No creo que ellos _____ (tener) tiempo para venir.", "a) tengan", "b) tienen", "c) tendrían", "d) tendrán"]
+    ["b) Es una lástima que nosotros no _____ (poder) asistir a la fiesta.", "a) podemos", "b) podamos", "c) podríamos", "d) pudimos"]
+    ["d) Dudo que ella _____ (saber) la respuesta correcta.", "a) sabe", "b) sabrá", "c) sabría", "d) sepa"]
+    ["c) Aunque _____ (hacer) buen tiempo, no saldremos.", "a) hace", "b) hacía", "c) haga", "d) hará"]
+    ["a) Espero que tú _____ (llegar) a tiempo a la reunión.", "a) llegues", "b) llegas", "c) llegabas", "d) llegarás"]
+    ["b) Es posible que ellos _____ (venir) mañana.", "a) vienen", "b) vengan", "c) vinieron", "d) vendrán"]
+    ["d) No es seguro que _____ (haber) suficiente comida para todos.", "a) hay", "b) habrá", "c) había", "d) haya"]
+    ["c) Ojalá que nosotros _____ (ganar) el partido mañana.", "a) ganamos", "b) ganaríamos", "c) ganemos", "d) ganamos"]
+    ["a) Es importante que tú _____ (ser) honesto con tus amigos.", "a) seas", "b) eres", "c) serás", "d) serías"]
+
     Continue until you do ''' + str(amount) + ''' questions'''
 
     response = openai.Completion.create(engine=model, prompt=prompt, max_tokens=800).choices[0].text.lstrip(
         string.punctuation).strip().replace("\"", "")
+    print(response)
     return response_formatter(response)
 
 
@@ -93,6 +105,18 @@ def vocabulary(amount, difficulty, theme, language):
     ["answer (the letter) QUESTION", "a) CHOICE", "b) CHOICE", "c) CHOICE", "d) CHOICE"],
     ["answer (the letter) QUESTION", "a) CHOICE", "b) CHOICE", "c) CHOICE", "d) CHOICE"],
     ["answer (the letter) QUESTION", "a) CHOICE", "b) CHOICE", "c) CHOICE", "d) CHOICE"]
+    
+    Here is an example for Spanish: 
+    ["c) Es necesario que tú _____ (estudiar) más para el examen.", "a) estudies", "b) estudiaras", "c) estudies", "d) estudias"]
+    ["a) No creo que ellos _____ (tener) tiempo para venir.", "a) tengan", "b) tienen", "c) tendrían", "d) tendrán"]
+    ["b) Es una lástima que nosotros no _____ (poder) asistir a la fiesta.", "a) podemos", "b) podamos", "c) podríamos", "d) pudimos"]
+    ["d) Dudo que ella _____ (saber) la respuesta correcta.", "a) sabe", "b) sabrá", "c) sabría", "d) sepa"]
+    ["c) Aunque _____ (hacer) buen tiempo, no saldremos.", "a) hace", "b) hacía", "c) haga", "d) hará"]
+    ["a) Espero que tú _____ (llegar) a tiempo a la reunión.", "a) llegues", "b) llegas", "c) llegabas", "d) llegarás"]
+    ["b) Es posible que ellos _____ (venir) mañana.", "a) vienen", "b) vengan", "c) vinieron", "d) vendrán"]
+    ["d) No es seguro que _____ (haber) suficiente comida para todos.", "a) hay", "b) habrá", "c) había", "d) haya"]
+    ["c) Ojalá que nosotros _____ (ganar) el partido mañana.", "a) ganamos", "b) ganaríamos", "c) ganemos", "d) ganamos"]
+    ["a) Es importante que tú _____ (ser) honesto con tus amigos.", "a) seas", "b) eres", "c) serás", "d) serías"]
 
     continue until you do ''' + str(amount) + ''' questions.'''
 
@@ -119,6 +143,17 @@ def culture(amount, difficulty, language, category):
     ==========================================================================
 
     Important Note: for each question, there should only be one reasonable choice for the question (the answer), the other choices for that question should be illogical
+    Here is an example for Spanish: 
+    ["c) Es necesario que tú _____ (estudiar) más para el examen.", "a) estudies", "b) estudiaras", "c) estudies", "d) estudias"]
+    ["a) No creo que ellos _____ (tener) tiempo para venir.", "a) tengan", "b) tienen", "c) tendrían", "d) tendrán"]
+    ["b) Es una lástima que nosotros no _____ (poder) asistir a la fiesta.", "a) podemos", "b) podamos", "c) podríamos", "d) pudimos"]
+    ["d) Dudo que ella _____ (saber) la respuesta correcta.", "a) sabe", "b) sabrá", "c) sabría", "d) sepa"]
+    ["c) Aunque _____ (hacer) buen tiempo, no saldremos.", "a) hace", "b) hacía", "c) haga", "d) hará"]
+    ["a) Espero que tú _____ (llegar) a tiempo a la reunión.", "a) llegues", "b) llegas", "c) llegabas", "d) llegarás"]
+    ["b) Es posible que ellos _____ (venir) mañana.", "a) vienen", "b) vengan", "c) vinieron", "d) vendrán"]
+    ["d) No es seguro que _____ (haber) suficiente comida para todos.", "a) hay", "b) habrá", "c) había", "d) haya"]
+    ["c) Ojalá que nosotros _____ (ganar) el partido mañana.", "a) ganamos", "b) ganaríamos", "c) ganemos", "d) ganamos"]
+    ["a) Es importante que tú _____ (ser) honesto con tus amigos.", "a) seas", "b) eres", "c) serás", "d) serías"]
     '''
 
     response = openai.Completion.create(engine=model, prompt=prompt, max_tokens=1100).choices[0].text.lstrip(
